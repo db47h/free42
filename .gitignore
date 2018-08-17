@@ -68,3 +68,6 @@ gtk/readtest_lines.cc
 gtk/skin2cc
 gtk/skins.cc
 gtk/symlinks
+
+# unused in master
+skins/free42skins
