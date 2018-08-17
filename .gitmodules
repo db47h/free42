@@ -1,0 +1,3 @@
+[submodule "skins/free42skins"]
+	path = skins/free42skins
+	url = http://github.com/db47h/free42skins
