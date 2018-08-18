@@ -2207,11 +2207,6 @@ void shell_print(const char *text, int length,
             gtk_widget_set_size_request(print_widget, 286, newlength);
         scroll_printout_to_bottom();
         offset = 2 * height - newlength + oldlength;
-        // TODO: scroll printout
-        // if (print_gc == NULL)
-        //     print_gc = gdk_gc_new(print_widget->window);
-        // gdk_draw_drawable(print_widget->window, print_gc, print_widget->window,
-        //                   0, offset, 0, 0, 286, oldlength - offset);
         cairo_t *cr = gdk_cairo_create(print_widget->window);
         gdk_cairo_set_source_window(cr, print_widget->window, 0, -offset);
         cairo_rectangle(cr, 0, 0, 286, oldlength - offset);
