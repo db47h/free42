@@ -464,7 +464,7 @@ int main(int argc, char *argv[]) {
     gtk_widget_add_events(w, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
     g_signal_connect(G_OBJECT(w), "button-press-event", G_CALLBACK(button_cb), NULL);
     g_signal_connect(G_OBJECT(w), "button-release-event", G_CALLBACK(button_cb), NULL);
-    GTK_WIDGET_SET_FLAGS(w, GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(w, TRUE);
     g_signal_connect(G_OBJECT(w), "key-press-event", G_CALLBACK(key_cb), NULL);
     g_signal_connect(G_OBJECT(w), "key-release-event", G_CALLBACK(key_cb), NULL);
     calc_widget = w;
@@ -860,7 +860,7 @@ static gboolean gt_signal_handler(GIOChannel *source, GIOCondition condition,
             gtk_window_present(GTK_WINDOW(mainwindow));
             //gdk_window_deiconify(mainwindow->window);
             //gdk_window_raise(mainwindow->window);
-            gdk_window_focus(mainwindow->window, GDK_CURRENT_TIME);
+            gdk_window_focus(gtk_widget_get_window(mainwindow), GDK_CURRENT_TIME);
         }
     return TRUE;
 }
@@ -949,7 +949,7 @@ static void set_window_property(GtkWidget *window, const char *prop_name, char *
     XTextProperty prop;
     XStringListToTextProperty(props, num_props, &prop);
     Atom PROP = XInternAtom(display, prop_name, False);
-    XSetTextProperty(display, GDK_WINDOW_XWINDOW(window->window), &prop, PROP);
+    XSetTextProperty(display, GDK_WINDOW_XWINDOW(gtk_widget_get_window(window)), &prop, PROP);
     XFree(prop.value);
 }
 
@@ -981,9 +981,10 @@ static void show_message(char *title, char *message) {
 }
 
 static void no_mwm_resize_helper(GtkWidget *w, gpointer cd) {
-    gdk_window_set_decorations(w->window, GdkWMDecoration(GDK_DECOR_ALL
+    GdkWindow *window = gtk_widget_get_window(w);
+    gdk_window_set_decorations(window, GdkWMDecoration(GDK_DECOR_ALL
                                     | GDK_DECOR_RESIZEH | GDK_DECOR_MAXIMIZE));
-    gdk_window_set_functions(w->window, GdkWMFunction(GDK_FUNC_ALL
+    gdk_window_set_functions(window, GdkWMFunction(GDK_FUNC_ALL
                                     | GDK_FUNC_RESIZE | GDK_FUNC_MAXIMIZE));
 }
 
@@ -1002,7 +1003,7 @@ static void no_mwm_resize_borders(GtkWidget *window) {
 
 static void scroll_printout_to_bottom() {
     gtk_adjustment_set_value(print_adj,
-                             print_adj->upper - print_adj->page_size);
+                             gtk_adjustment_get_upper(print_adj) - gtk_adjustment_get_page_size(print_adj));
 }
 
 static void quitCB() {
@@ -1012,7 +1013,7 @@ static void quitCB() {
 static void showPrintOutCB() {
     //gtk_widget_show(printwindow);
     gtk_window_present(GTK_WINDOW(printwindow));
-    gdk_window_focus(printwindow->window, GDK_CURRENT_TIME);
+    gdk_window_focus(gtk_widget_get_window(printwindow), GDK_CURRENT_TIME);
     state.printWindowKnown = 1;
     state.printWindowMapped = 1;
 }
@@ -1862,7 +1863,7 @@ static void repaint_printout(int x, int y, int width, int height) {
         d1 += d_bpl;
     }
 
-    draw_pixbuf(print_widget->window, buf,
+    draw_pixbuf(gtk_widget_get_window(print_widget), buf,
                 0, 0, x, y, width, height);
     g_object_unref(G_OBJECT(buf));
 }
@@ -2207,8 +2208,9 @@ void shell_print(const char *text, int length,
             gtk_widget_set_size_request(print_widget, 286, newlength);
         scroll_printout_to_bottom();
         offset = 2 * height - newlength + oldlength;
-        cairo_t *cr = gdk_cairo_create(print_widget->window);
-        gdk_cairo_set_source_window(cr, print_widget->window, 0, -offset);
+        GdkWindow *w = gtk_widget_get_window(print_widget);
+        cairo_t *cr = gdk_cairo_create(w);
+        gdk_cairo_set_source_window(cr, w, 0, -offset);
         cairo_rectangle(cr, 0, 0, 286, oldlength - offset);
         cairo_fill(cr);
         cairo_destroy(cr);

@@ -549,7 +549,7 @@ void skin_finish_image() {
 }
 
 void skin_repaint() {
-    draw_pixbuf(calc_widget->window, skin_image, skin.x, skin.y, 0, 0, skin.width, skin.height);
+    draw_pixbuf(gtk_widget_get_window(calc_widget), skin_image, skin.x, skin.y, 0, 0, skin.width, skin.height);
 }
 
 void skin_repaint_annunciator(int which, bool state) {
@@ -557,12 +557,12 @@ void skin_repaint_annunciator(int which, bool state) {
         return;
     SkinAnnunciator *ann = annunciators + (which - 1);
     if (state)
-        draw_pixbuf(calc_widget->window, skin_image,
+        draw_pixbuf(gtk_widget_get_window(calc_widget), skin_image,
                         ann->src.x, ann->src.y,
                         ann->disp_rect.x, ann->disp_rect.y,
                     ann->disp_rect.width, ann->disp_rect.height);
     else
-        draw_pixbuf(calc_widget->window, skin_image,
+        draw_pixbuf(gtk_widget_get_window(calc_widget), skin_image,
                         ann->disp_rect.x, ann->disp_rect.y,
                         ann->disp_rect.x, ann->disp_rect.y,
                     ann->disp_rect.width, ann->disp_rect.height);
@@ -681,13 +681,13 @@ void skin_repaint_key(int key, bool state) {
                 s1 += s_bpl;
                 d1 += d_bpl;
             }
-            draw_pixbuf(calc_widget->window, tmpbuf,
+            draw_pixbuf(gtk_widget_get_window(calc_widget), tmpbuf,
                             0, 0,
                             display_loc.x + x, display_loc.y + y,
                         width, height);
         } else {
             // Repaint the screen
-            draw_pixbuf(calc_widget->window, disp_image,
+            draw_pixbuf(gtk_widget_get_window(calc_widget), disp_image,
                             x, y,
                             display_loc.x + x, display_loc.y + y,
                         width, height);
@@ -699,12 +699,12 @@ void skin_repaint_key(int key, bool state) {
         return;
     k = keylist + key;
     if (state)
-        draw_pixbuf(calc_widget->window, skin_image,
+        draw_pixbuf(gtk_widget_get_window(calc_widget), skin_image,
                         k->src.x, k->src.y,
                         k->disp_rect.x, k->disp_rect.y,
                     k->disp_rect.width, k->disp_rect.height);
     else
-        draw_pixbuf(calc_widget->window, skin_image,
+        draw_pixbuf(gtk_widget_get_window(calc_widget), skin_image,
                         k->disp_rect.x, k->disp_rect.y,
                         k->disp_rect.x, k->disp_rect.y,
                     k->disp_rect.width, k->disp_rect.height);
@@ -735,7 +735,7 @@ void skin_display_blitter(const char *bits, int bytesperline, int x, int y,
             }
         }
     if (allow_paint && display_enabled)
-        draw_pixbuf(calc_widget->window, disp_image,
+        draw_pixbuf(gtk_widget_get_window(calc_widget), disp_image,
                         x * sx, y * sy,
                         display_loc.x + x * sx, display_loc.y + y * sy,
                     width * sx, height * sy);
@@ -743,7 +743,7 @@ void skin_display_blitter(const char *bits, int bytesperline, int x, int y,
 
 void skin_repaint_display() {
     if (display_enabled)
-        draw_pixbuf(calc_widget->window, disp_image,
+        draw_pixbuf(gtk_widget_get_window(calc_widget), disp_image,
                         0, 0, display_loc.x, display_loc.y,
                     131 * display_scale.x, 16 * display_scale.y);
 }
