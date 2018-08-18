@@ -640,7 +640,6 @@ void skin_repaint_key(int key, bool state) {
 
     // TODO: Test soft keys
     if (key >= -7 && key <= -2) {
-        fprintf(stderr, "Painting softkey %d - state %d\n", key, state);
         /* Soft key */
         if (!display_enabled)
             // Should never happen -- the display is only disabled during macro
