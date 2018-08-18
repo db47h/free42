@@ -549,9 +549,7 @@ void skin_finish_image() {
 }
 
 void skin_repaint() {
-    gdk_draw_pixbuf(calc_widget->window, NULL, skin_image,
-                    skin.x, skin.y, 0, 0, skin.width, skin.height,
-                    GDK_RGB_DITHER_MAX, 0, 0);
+    draw_pixbuf(calc_widget->window, skin_image, skin.x, skin.y, 0, 0, skin.width, skin.height);
 }
 
 void skin_repaint_annunciator(int which, bool state) {
@@ -559,17 +557,15 @@ void skin_repaint_annunciator(int which, bool state) {
         return;
     SkinAnnunciator *ann = annunciators + (which - 1);
     if (state)
-        gdk_draw_pixbuf(calc_widget->window, NULL, skin_image,
+        draw_pixbuf(calc_widget->window, skin_image,
                         ann->src.x, ann->src.y,
                         ann->disp_rect.x, ann->disp_rect.y,
-                        ann->disp_rect.width, ann->disp_rect.height,
-                        GDK_RGB_DITHER_MAX, 0, 0);
+                    ann->disp_rect.width, ann->disp_rect.height);
     else
-        gdk_draw_pixbuf(calc_widget->window, NULL, skin_image,
+        draw_pixbuf(calc_widget->window, skin_image,
                         ann->disp_rect.x, ann->disp_rect.y,
                         ann->disp_rect.x, ann->disp_rect.y,
-                        ann->disp_rect.width, ann->disp_rect.height,
-                        GDK_RGB_DITHER_MAX, 0, 0);
+                    ann->disp_rect.width, ann->disp_rect.height);
 }
 
 void skin_find_key(int x, int y, bool cshift, int *skey, int *ckey) {
@@ -642,7 +638,9 @@ unsigned char *skin_keymap_lookup(guint keyval, bool printable,
 void skin_repaint_key(int key, bool state) {
     SkinKey *k;
 
+    // TODO: Test soft keys
     if (key >= -7 && key <= -2) {
+        fprintf(stderr, "Painting softkey %d - state %d\n", key, state);
         /* Soft key */
         if (!display_enabled)
             // Should never happen -- the display is only disabled during macro
@@ -683,18 +681,16 @@ void skin_repaint_key(int key, bool state) {
                 s1 += s_bpl;
                 d1 += d_bpl;
             }
-            gdk_draw_pixbuf(calc_widget->window, NULL, tmpbuf,
+            draw_pixbuf(calc_widget->window, tmpbuf,
                             0, 0,
                             display_loc.x + x, display_loc.y + y,
-                            width, height,
-                            GDK_RGB_DITHER_NONE, 0, 0);
+                        width, height);
         } else {
             // Repaint the screen
-            gdk_draw_pixbuf(calc_widget->window, NULL, disp_image,
+            draw_pixbuf(calc_widget->window, disp_image,
                             x, y,
                             display_loc.x + x, display_loc.y + y,
-                            width, height,
-                            GDK_RGB_DITHER_NONE, 0, 0);
+                        width, height);
         }
         return;
     }
@@ -703,19 +699,15 @@ void skin_repaint_key(int key, bool state) {
         return;
     k = keylist + key;
     if (state)
-        gdk_draw_pixbuf(calc_widget->window, NULL, skin_image,
+        draw_pixbuf(calc_widget->window, skin_image,
                         k->src.x, k->src.y,
                         k->disp_rect.x, k->disp_rect.y,
-                        k->disp_rect.width, k->disp_rect.height,
-                        GDK_RGB_DITHER_MAX,
-                        k->disp_rect.x, k->disp_rect.y);
+                    k->disp_rect.width, k->disp_rect.height);
     else
-        gdk_draw_pixbuf(calc_widget->window, NULL, skin_image,
+        draw_pixbuf(calc_widget->window, skin_image,
                         k->disp_rect.x, k->disp_rect.y,
                         k->disp_rect.x, k->disp_rect.y,
-                        k->disp_rect.width, k->disp_rect.height,
-                        GDK_RGB_DITHER_MAX,
-                        k->disp_rect.x, k->disp_rect.y);
+                    k->disp_rect.width, k->disp_rect.height);
 }
 
 void skin_display_blitter(const char *bits, int bytesperline, int x, int y,
@@ -743,19 +735,17 @@ void skin_display_blitter(const char *bits, int bytesperline, int x, int y,
             }
         }
     if (allow_paint && display_enabled)
-        gdk_draw_pixbuf(calc_widget->window, NULL, disp_image,
+        draw_pixbuf(calc_widget->window, disp_image,
                         x * sx, y * sy,
                         display_loc.x + x * sx, display_loc.y + y * sy,
-                        width * sx, height * sy,
-                        GDK_RGB_DITHER_NONE, 0, 0);
+                    width * sx, height * sy);
 }
 
 void skin_repaint_display() {
     if (display_enabled)
-        gdk_draw_pixbuf(calc_widget->window, NULL, disp_image,
+        draw_pixbuf(calc_widget->window, disp_image,
                         0, 0, display_loc.x, display_loc.y,
-                        131 * display_scale.x, 16 * display_scale.y,
-                        GDK_RGB_DITHER_NONE, 0, 0);
+                    131 * display_scale.x, 16 * display_scale.y);
 }
 
 void skin_display_set_enabled(bool enable) {

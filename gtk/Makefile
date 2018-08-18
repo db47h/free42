@@ -29,6 +29,10 @@ CFLAGS = -MMD \
 	 -DDECIMAL_GLOBAL_EXCEPTION_FLAGS=1 \
 	 -DDECIMAL_GLOBAL_EXCEPTION_FLAGS_ACCESS_FUNCTIONS=1
 
+# transition to gtk-3
+CFLAGS+="-DGTK_DISABLE_SINGLE_INCLUDES"
+CFLAGS+="-DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED"
+
 CXXFLAGS = $(CFLAGS) \
 	 -fno-exceptions \
 	 -fno-rtti \
@@ -118,7 +122,7 @@ clean: FORCE
 		keymap2cc keymap2cc.exe keymap.cc \
 	        readtest_lines.cc \
 	        gcc111libbid.a \
-		*.o *.d *.i *.ii *.s symlinks core.*
+			*.o *.d *.i *.ii *.s symlinks core.*
 	rm -rf IntelRDFPMathLib20U1
 
 cleaner: FORCE
@@ -128,7 +132,7 @@ cleaner: FORCE
 		keymap2cc keymap2cc.exe keymap.cc \
 	        readtest_lines.cc \
 	        gcc111libbid.a \
-		*.o *.d *.i *.ii *.s symlinks core.*
+			*.o *.d *.i *.ii *.s symlinks core.*
 	rm -rf IntelRDFPMathLib20U1
 
 FORCE:

@@ -347,6 +347,11 @@ int main(int argc, char *argv[]) {
         init_mode = 0;
     }
 
+    GdkDisplay *gd = gdk_display_get_default();
+    if (gd == NULL) {
+        fprintf(stderr, "Failed to get default display.\n");
+        exit(1);
+    }
 
     /*******************************************************/
     /***** Enforce single-instance mode, if applicable *****/
@@ -359,7 +364,7 @@ int main(int argc, char *argv[]) {
         gethostname(appid, appid_len);
         strcat(appid, "|");
         strcat(appid, getpwuid(getuid())->pw_name);
-        Display *display = GDK_DISPLAY();
+        Display *display = gdk_x11_display_get_xdisplay(gd);
         Atom FREE42_HOST_AND_USER = XInternAtom(display, "FREE42_HOST_AND_USER", False);
         XGrabServer(display);
         Window root;
@@ -472,7 +477,7 @@ int main(int argc, char *argv[]) {
         list[1] = pidstr;
         set_window_property(mainwindow, "FREE42_HOST_AND_USER", list, 2);
         free(appid);
-        XUngrabServer(GDK_DISPLAY());
+        XUngrabServer(gdk_x11_display_get_xdisplay(gd));
     }
 
 
@@ -938,7 +943,8 @@ static void quit() {
 }
 
 static void set_window_property(GtkWidget *window, const char *prop_name, char *props[], int num_props) {
-    Display *display = GDK_DISPLAY();
+    GdkDisplay *gd = gtk_widget_get_display(window);
+    Display *display = gdk_x11_display_get_xdisplay(gd);
     gtk_widget_realize(window);
     XTextProperty prop;
     XStringListToTextProperty(props, num_props, &prop);
@@ -1856,9 +1862,8 @@ static void repaint_printout(int x, int y, int width, int height) {
         d1 += d_bpl;
     }
 
-    gdk_draw_pixbuf(print_widget->window, NULL, buf,
-                    0, 0, x, y, width, height,
-                    GDK_RGB_DITHER_MAX, 0, 0);
+    draw_pixbuf(print_widget->window, buf,
+                0, 0, x, y, width, height);
     g_object_unref(G_OBJECT(buf));
 }
 
@@ -2202,10 +2207,17 @@ void shell_print(const char *text, int length,
             gtk_widget_set_size_request(print_widget, 286, newlength);
         scroll_printout_to_bottom();
         offset = 2 * height - newlength + oldlength;
-        if (print_gc == NULL)
-            print_gc = gdk_gc_new(print_widget->window);
-        gdk_draw_drawable(print_widget->window, print_gc, print_widget->window,
-                          0, offset, 0, 0, 286, oldlength - offset);
+        // TODO: scroll printout
+        // if (print_gc == NULL)
+        //     print_gc = gdk_gc_new(print_widget->window);
+        // gdk_draw_drawable(print_widget->window, print_gc, print_widget->window,
+        //                   0, offset, 0, 0, 286, oldlength - offset);
+        cairo_t *cr = gdk_cairo_create(print_widget->window);
+        gdk_cairo_set_source_window(cr, print_widget->window, 0, -offset);
+        cairo_rectangle(cr, 0, 0, 286, oldlength - offset);
+        cairo_fill(cr);
+        cairo_destroy(cr);
+
         repaint_printout(0, newlength - 2 * height, 286, 2 * height);
     } else {
         gtk_widget_set_size_request(print_widget, 286, newlength);
@@ -2364,4 +2376,12 @@ void shell_get_time_date(uint4 *time, uint4 *date, int *weekday) {
         *date = ((tms.tm_year + 1900) * 100 + tms.tm_mon + 1) * 100 + tms.tm_mday;
     if (weekday != NULL)
         *weekday = tms.tm_wday;
+}
+
+void draw_pixbuf(GdkDrawable *drawable, GdkPixbuf *pixbuf, double src_x, double src_y, double dst_x, double dst_y, double width, double height) {
+    cairo_t *cr = gdk_cairo_create(drawable);
+    gdk_cairo_set_source_pixbuf(cr, pixbuf, dst_x-src_x, dst_y-src_y);
+    cairo_rectangle(cr, dst_x, dst_y, width, height);
+    cairo_fill(cr);
+    cairo_destroy(cr);
 }

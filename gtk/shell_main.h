@@ -58,4 +58,6 @@ typedef struct {
     
 keymap_entry *parse_keymap_entry(char *line, int lineno);
 
+void draw_pixbuf(GdkDrawable *drawable, GdkPixbuf *pixbuf, double src_x, double src_y, double dst_x, double dst_y, double width, double height);
+
 #endif
