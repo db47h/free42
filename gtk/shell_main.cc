@@ -161,7 +161,7 @@ static void copyCB();
 static void pasteCB();
 static void aboutCB();
 static void delete_cb(GtkWidget *w, gpointer cd);
-static void delete_print_cb(GtkWidget *w, gpointer cd);
+static gboolean delete_print_cb(GtkWidget *w, gpointer cd);
 static gboolean expose_cb(GtkWidget *w, GdkEventExpose *event, gpointer cd);
 static gboolean print_expose_cb(GtkWidget *w, GdkEventExpose *event, gpointer cd);
 static gboolean button_cb(GtkWidget *w, GdkEventButton *event, gpointer cd);
@@ -1510,7 +1510,7 @@ static void delete_cb(GtkWidget *w, gpointer cd) {
     quit();
 }
 
-static void delete_print_cb(GtkWidget *w, gpointer cd) {
+static gboolean delete_print_cb(GtkWidget *w, gpointer cd) {
     gint x, y;
     gtk_window_get_position(GTK_WINDOW(printwindow), &x, &y);
     state.printWindowX = x;
@@ -1518,6 +1518,7 @@ static void delete_print_cb(GtkWidget *w, gpointer cd) {
     state.printWindowMapped = 0;
     state.printWindowKnown = 1;
     gtk_widget_hide(GTK_WIDGET(printwindow));
+    return TRUE;
 }
 
 static gboolean expose_cb(GtkWidget *w, GdkEventExpose *event, gpointer cd) {
