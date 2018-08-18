@@ -1,11 +1,12 @@
 #!/bin/sh -e
 
-unset BCD_MATH
+unset BIN_MATH
+unset NO_AUDIO
 cd gtk
 make cleaner
-make -e AUDIO_ALSA=1
+make -j8
 make clean
-make -e BCD_MATH=1 AUDIO_ALSA=1
+make -j8 BIN_MATH=1
 cd ..
 rm -rf Free42Linux
 mkdir Free42Linux

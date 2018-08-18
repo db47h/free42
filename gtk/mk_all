@@ -1,9 +1,9 @@
 #!/bin/bash
 
 make cleaner
-make -e -j16 ALSA_AUDIO=1
+make -j16
 
 make clean
-make -e -j16 ALSA_AUDIO=1  BCD_MATH=1
+make -j16 BIN_MATH=1
 
 make clean

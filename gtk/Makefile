@@ -62,7 +62,7 @@ OBJS = shell_main.o shell_skin.o skins.o keymap.o shell_loadimage.o \
 	core_math1.o core_math2.o core_phloat.o core_sto_rcl.o \
 	core_tables.o core_variables.o core_aux.o
 
-ifdef BCD_MATH
+ifndef BIN_MATH
 CXXFLAGS += -DBCD_MATH
 EXE = free42dec
 else
@@ -75,7 +75,7 @@ SRCS += readtest.c readtest_lines.cc
 OBJS += readtest.o readtest_lines.o
 endif
 
-ifdef AUDIO_ALSA
+ifndef NO_AUDIO
 # Note: the name of the libasound shared library that is usually compiled into
 # the executable is defined in the corresponding *.la file, in the 'dlname'
 # property. I suppose it would be better to grab it from there at build time,
