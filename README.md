@@ -8,8 +8,8 @@ For more information about free42, see the original [free42 readme][free42-READM
 
 Note that some of the changes (like the default skins) apply to all builds, may be with the exception of Android, but I haven't tested it yet. The current focus is on the GTK builds. And I will probably never touch anything Windows or Mac related. Feel free to get in touch if you want to work on these platforms.
 
-- The default skins have been replaced by [the anthracite skin][free42skins]. 
-- The GTK+ build has been updated to build on modern systems. It still uses GTK+ 2 but deprecated APIs calls have been replaced and migration to GTK+ 3 is in progress.
+- The default skins have been replaced by [the anthracite skin][free42skins].
+- The GTK+ build has been updated to build on modern systems. It still uses GTK+ 2 but most deprecated APIs calls have been replaced.
 - Decimal floating point and ALSA audio are the default in GTK builds:
   - add `BIN_MATH=1` to the make command line to enable binary floating point
   - add `NO_AUDIO=1` to the make command line to disable alsa audio and use the default `gtk_beep()`.
